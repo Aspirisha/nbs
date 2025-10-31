@@ -91,9 +91,14 @@ struct TFileSystemStat
     i64 MountFlags = 0;     // Mount flags of filesystem
 };
 
+struct TFileStatEx : public TFileStat {
+    using TFileStat::TFileStat;
+    ui64 Dev = 0;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 
-using TDirEntry = std::pair<TString, TFileStat>;
+using TDirEntry = std::pair<TString, TFileStatEx>;
 
 struct TListDirResult
 {
@@ -114,6 +119,8 @@ TFileHandle OpenAt(
 void MkDirAt(const TFileHandle& handle, const TString& name, int mode);
 void MkSockAt(const TFileHandle& handle, const TString& name, int mode);
 void MkFifoAt(const TFileHandle& handle, const TString& name, int mode);
+void MkCharDeviceAt(const TFileHandle& handle, const TString& name, int mode, dev_t dev);
+void MkBlockDeviceAt(const TFileHandle& handle, const TString& name, int mode, dev_t dev);
 
 void RenameAt(
     const TFileHandle& handle,
@@ -134,8 +141,8 @@ void UnlinkAt(const TFileHandle& handle, const TString& name, bool directory);
 
 TString ReadLink(const TFileHandle& handle);
 
-TFileStat Stat(const TFileHandle& handle);
-TFileStat StatAt(const TFileHandle& handle, const TString& name);
+TFileStatEx Stat(const TFileHandle& handle);
+TFileStatEx StatAt(const TFileHandle& handle, const TString& name);
 TFileSystemStat StatFs(const TFileHandle& handle);
 
 TListDirResult ListDirAt(
